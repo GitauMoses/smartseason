@@ -151,7 +151,7 @@ export default function AgentFieldDetail() {
                       {u.agent?.name || 'You'}
                     </span>
                     <span className="text-xs text-slate-500">
-                      · {formatDateTime(u.created_at)} · {daysAgo(u.created_at)}
+                      · {formatDateTime(u.createdAt || u.created_at)} · {daysAgo(u.createdAt || u.created_at)}
                     </span>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">{u.observation}</p>

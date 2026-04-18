@@ -36,7 +36,7 @@ export default function FieldsTable({ fields, detailPathPrefix, showAgent = true
                 )}
                 <td className="td text-slate-500">
                   {f.updates && f.updates.length > 0
-                    ? daysAgo(f.updates[0].created_at)
+                    ? daysAgo(f.updates[0].createdAt || f.updates[0].created_at)
                     : <span className="text-amber-600">No updates</span>}
                 </td>
                 <td className="td text-right">
