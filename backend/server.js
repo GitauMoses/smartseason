@@ -11,8 +11,20 @@ const fieldRoutes = require('./src/routes/fields');
 
 const app = express();
 
+const allowedOrigins = [
+  /\.vercel\.app$/,
+  /\.railway\.app$/,
+  /^http:\/\/localhost:\d+$/
+];
+
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const allowed = allowedOrigins.some((pattern) =>
+      typeof pattern === 'string' ? pattern === origin : pattern.test(origin)
+    );
+    callback(null, allowed);
+  },
   credentials: true
 }));
 app.use(express.json({ limit: '1mb' }));
