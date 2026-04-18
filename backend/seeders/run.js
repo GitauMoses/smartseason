@@ -2,6 +2,8 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const { sequelize, User, Field, FieldUpdate } = require('../src/models');
 
+const isMain = require.main === module;
+
 function daysAgo(n) {
   const d = new Date();
   d.setDate(d.getDate() - n);
@@ -219,10 +221,15 @@ async function run() {
   console.log('  Admin: admin@smartseason.com / Admin1234');
   console.log('  Agent: aisha@smartseason.com / Agent1234');
   console.log('  Agent: brian@smartseason.com / Agent1234\n');
-  await sequelize.close();
+  // Only close the connection when run standalone — not when called by server.js
+  if (isMain) await sequelize.close();
 }
 
-run().catch((err) => {
-  console.error('Seeder failed:', err);
-  process.exit(1);
-});
+if (isMain) {
+  run().catch((err) => {
+    console.error('Seeder failed:', err);
+    process.exit(1);
+  });
+}
+
+module.exports = { run };

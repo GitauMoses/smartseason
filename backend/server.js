@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { sequelize } = require('./src/models');
+const { sequelize, User } = require('./src/models');
 const { error } = require('./src/utils/response');
 
 const authRoutes = require('./src/routes/auth');
@@ -48,11 +48,27 @@ app.use((err, req, res, _next) => {
 
 const PORT = process.env.PORT || 5000;
 
+async function autoSeedIfEmpty() {
+  try {
+    const count = await User.count();
+    if (count === 0) {
+      console.log('Empty database detected — running seeder...');
+      const { run } = require('./seeders/run');
+      await run();
+    } else {
+      console.log(`Database has ${count} user(s) — skipping seed.`);
+    }
+  } catch (err) {
+    console.error('Auto-seed check failed:', err.message);
+  }
+}
+
 async function start() {
   try {
     await sequelize.authenticate();
     await sequelize.sync();
     console.log(`Database connected (${sequelize.getDialect()}).`);
+    await autoSeedIfEmpty();
     app.listen(PORT, () => {
       console.log(`SmartSeason API listening on http://localhost:${PORT}`);
     });
